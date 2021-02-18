@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.MySqlMapper">
+
+	<!-- MySQL 5.7버전 기준
+	     특정 테이블의 AUTO INCREMENT 값 가져오기 쿼리문 -->
+	<select id="getNextNum" resultType="int">
+		SELECT AUTO_INCREMENT 
+		FROM information_schema.tables 
+		WHERE table_name = #{tableName}
+		AND table_schema = DATABASE() 
+	</select>
+
+</mapper>

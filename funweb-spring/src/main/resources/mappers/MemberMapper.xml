@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.MemberMapper">
+
+	<select id="getMemberById" resultType="memberVo">
+		SELECT * FROM member WHERE id = #{id}
+	</select>
+	
+	<select id="getAllMembers" resultType="memberVo">
+		SELECT * FROM member ORDER BY id
+	</select>
+	
+	<insert id="addMember">
+		INSERT INTO member (id, passwd, name, age, gender, email, reg_date, address, tel) 
+		VALUES (#{id}, #{passwd}, #{name}, #{age}, #{gender}, #{email}, #{regDate}, #{address}, #{tel}) 
+	</insert>
+	
+	<select id="userCheck" resultType="string">
+		SELECT passwd FROM member WHERE id = #{id}
+	</select>
+	
+	<select id="getCountById" resultType="int">
+		SELECT COUNT(*) FROM member WHERE id = #{id}
+	</select>
+	
+	<update id="update">
+		UPDATE member 
+		SET name = #{name}, age = #{age}, gender = #{gender}, email = #{email}, address = #{address}, tel = #{tel} 
+		WHERE id = #{id} 
+	</update>
+	
+	<delete id="deleteById">
+		DELETE FROM member WHERE id = #{id}
+	</delete>
+	
+	<delete id="deleteAll">
+		DELETE FROM member
+	</delete>
+	
+	<select id="getGenderPerCount" resultType="map">
+		SELECT gender, count(*) as cnt 
+		FROM member 
+		GROUP BY gender 
+	</select>
+	
+	
+	<select id="getAgeRangePerCount" resultType="map">
+		<![CDATA[
+		SELECT CASE 
+		         WHEN age BETWEEN 10 AND 19 THEN '10대'
+		         WHEN age BETWEEN 20 AND 39 THEN '청년층'
+		         WHEN age BETWEEN 40 AND 59 THEN '장년층'
+		         WHEN age >= 60 THEN '노년층'
+		         WHEN age < 10 OR age IS NULL THEN '기타'
+		       END as age_range
+				, count(*) as cnt
+		FROM member
+		GROUP BY age_range
+		]]>
+	</select>
+	
+
+</mapper>
+
+
+
+
+
+

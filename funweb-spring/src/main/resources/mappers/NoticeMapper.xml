@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.NoticeMapper">
+
+	<insert id="addNotice">
+		INSERT INTO notice (id, subject, content, readcount, reg_date, ip, re_ref, re_lev, re_seq) 
+		VALUES (#{id}, #{subject}, #{content}, #{readcount}, #{regDate}, #{ip}, #{reRef}, #{reLev}, #{reSeq})
+	</insert>
+	
+	<update id="updateReadcount">
+		UPDATE notice 
+		SET readcount = readcount + 1 
+		WHERE num = #{num} 
+	</update>
+	
+	
+	<select id="getCountAll" resultType="int">
+		SELECT COUNT(*) FROM notice
+	</select>
+	
+	<select id="getNotices" resultType="noticeVo">
+		SELECT * 
+		FROM notice 
+		ORDER BY re_ref DESC, re_seq ASC 
+		LIMIT #{startRow}, #{pageSize} 
+	</select>
+	
+	<update id="updateBoard">
+		UPDATE notice 
+		SET subject = #{subject}, content = #{content} 
+		WHERE num = #{num} 
+	</update>
+	
+	<update id="updateReSeq">
+		<![CDATA[
+		UPDATE notice 
+		SET re_seq = re_seq + 1 
+		WHERE re_ref = #{reRef} 
+		AND re_seq > #{reSeq} 
+		]]>
+	</update>
+	
+	
+	<select id="getCountBySearch" resultType="int">
+		SELECT COUNT(*) 
+		FROM notice 
+		<if test="category == 'subject'">
+			WHERE subject LIKE CONCAT('%', #{search}, '%') 
+		</if>
+		<if test="category == 'content'">
+			WHERE content LIKE CONCAT('%', #{search}, '%') 
+		</if>
+		<if test="category == 'id'">
+			WHERE id LIKE CONCAT('%', #{search}, '%') 
+		</if>
+	</select>
+	
+	
+	<select id="getNoticesBySearch" resultType="noticeVo">
+		SELECT * 
+		FROM notice 
+		<if test="category == 'subject'">
+			WHERE subject LIKE CONCAT('%', #{search}, '%') 
+		</if>
+		<if test="category == 'content'">
+			WHERE content LIKE CONCAT('%', #{search}, '%') 
+		</if>
+		<if test="category == 'id'">
+			WHERE id LIKE CONCAT('%', #{search}, '%') 
+		</if>
+		ORDER BY re_ref DESC, re_seq ASC 
+		LIMIT #{startRow}, #{pageSize} 
+	</select>
+	
+	
+	
+	<select id="getNoticeAndAttaches" resultMap="noticeAndAttaches">
+		SELECT n.num, n.id, n.subject, n.content, n.readcount, n.reg_date, n.ip,
+		       n.re_ref, n.re_lev, n.re_seq,
+		       a.num as anum, a.uuid, a.filename, a.uploadpath, a.image, a.no_num
+		FROM notice n LEFT OUTER JOIN attach a
+		ON n.num = a.no_num
+		where n.num = #{num}
+	</select>
+	<resultMap id="noticeAndAttaches" type="noticeVo">
+		<!-- property 속성은 setter 메소드 이름을 의미함! -->
+		<id column="num" property="num"/>
+		<result column="id" property="id"/>
+		<result column="subject" property="subject"/>
+		<result column="content" property="content"/>
+		<result column="readcount" property="readcount"/>
+		<result column="reg_date" property="regDate"/>
+		<result column="ip" property="ip"/>
+		<result column="re_ref" property="reRef"/>
+		<result column="re_lev" property="reLev"/>
+		<result column="re_seq" property="reSeq"/>
+		<collection property="attachList" ofType="attachVo" javaType="arraylist">
+			<id column="anum" property="num"/>
+			<result column="uuid" property="uuid"/>
+			<result column="filename" property="filename"/>
+			<result column="uploadpath" property="uploadpath"/>
+			<result column="image" property="image"/>
+			<result column="no_num" property="noNum"/>
+		</collection>
+	</resultMap>
+	
+	
+	<select id="getNoticesByNums" resultType="noticeVo">
+		SELECT * 
+		FROM notice
+		WHERE num IN 
+		<foreach collection="numList" item="num" open="(" separator="," close=")">
+			#{num}
+		</foreach>
+	</select>
+	
+	
+
+</mapper>
+
+
+

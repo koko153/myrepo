@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AttachMapper">
+
+	<insert id="insertAttach">
+		INSERT INTO attach (uuid, filename, uploadpath, image, no_num) 
+		VALUES (#{uuid}, #{filename}, #{uploadpath}, #{image}, #{noNum}) 
+	</insert>
+	
+	<delete id="deleteAttachesByNums">
+		DELETE
+		FROM attach
+		WHERE num IN
+		<foreach collection="numList" item="num" open="(" separator="," close=")">
+			#{num}
+		</foreach>
+	</delete>
+
+</mapper>
+
+
+
+
+
+
